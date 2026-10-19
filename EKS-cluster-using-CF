@@ -1,7 +1,7 @@
-create sever intance 
-atatch ROLE
-connect to sever
-install kubectl and EKSctl
+1.create sever intance 
+2.atatch ROLE
+3.connect to sever
+4.install kubectl and EKSctl
 
 Kubectl--> 
 ----------
@@ -14,6 +14,15 @@ eksctl -->
 eksctl create cluster --name sk-cluster \
    --region eu-west-1\
 --node-typec7i-flex.large \
+
+TO Delete
+------
+export CLUSTER_NAME=sk-cluster
+export AWS_REGION=eu-west-1
+
+eksctl delete cluster \
+  --name "$CLUSTER_NAME" \
+  --region "$AWS_REGION"
 
 FOR IAM OIDC provider >> Without This yu will noot able to setup IAM role for ypu cluster CSI driver
 ---------------------
