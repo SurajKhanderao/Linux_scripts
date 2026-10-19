@@ -1,0 +1,74 @@
+create sever intance 
+atatch ROLE
+connect to sever
+install kubectl and EKSctl
+
+Kubectl--> 
+----------
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+chmod +x kubectl
+mv kubectl /usr/local/bin/kubectl
+
+eksctl -->
+-------
+eksctl create cluster --name sk-cluster \
+   --region eu-west-1\
+--node-typec7i-flex.large \
+
+FOR IAM OIDC provider >> Without This yu will noot able to setup IAM role for ypu cluster CSI driver
+---------------------
+1.Set your cluster details
+  export CLUSTER_NAME=my-eks-cluster
+  export AWS_REGION=ap-south-1
+
+2.Check your AWS identity and cluster:
+aws sts get-caller-identity
+aws eks describe-cluster \
+  --name "$CLUSTER_NAME" \
+  --region "$AWS_REGION" \
+  --query 'cluster.status' \
+  --output text
+
+3. Associate the IAM OIDC provider
+  eksctl utils associate-iam-oidc-provider \
+  --cluster "$CLUSTER_NAME" \
+  --region "$AWS_REGION" \
+  --approve
+
+4. Create the EFS/EBS CSI IAM role 
+   export ROLE_NAME=AmazonEKS_EFS_CSI_DriverRole
+  eksctl create iamserviceaccount \
+  --cluster "$CLUSTER_NAME" \
+  --region "$AWS_REGION" \
+  --namespace kube-system \
+  --name efs-csi-controller-sa \
+  --role-name "$ROLE_NAME" \
+  --attach-policy-arn arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy \
+  --approve
+
+5. Install the EFS CSI driver >> Ypu can also use Helm but you need to attach IAM rile explicitly
+  eksctl create addon \
+  --cluster "$CLUSTER_NAME" \
+  --region "$AWS_REGION" \
+  --name aws-efs-csi-driver \
+  --service-account-role-arn "$(aws iam get-role --role-name AmazonEKS_EFS_CSI_DriverRole --query 'Role.Arn' --output text)"
+
+
+Create the EBS CSI IAM role
+eksctl create iamserviceaccount \
+  --cluster "$CLUSTER_NAME" \
+  --region "$AWS_REGION" \
+  --namespace kube-system \
+  --name ebs-csi-controller-sa \
+  --role-name AmazonEKS_EBS_CSI_DriverRole \
+  --attach-policy-arn arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy \
+  --approve
+
+FOR EBS CSI Driver
+eksctl create addon \
+  --cluster "$CLUSTER_NAME" \
+  --region "$AWS_REGION" \
+  --name aws-ebs-csi-driver \
+  --service-account-role-arn "$(aws iam get-role --role-name AmazonEKS_EBS_CSI_DriverRole --query 'Role.Arn' --output text)"
+
+
