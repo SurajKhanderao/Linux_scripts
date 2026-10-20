@@ -15,15 +15,17 @@ curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/d
 sudo mv /tmp/eksctl /usr/local/bin
 eksctl version
 
-eksctl create cluster --name sk-cluster \
-   --region eu-west-1\
---node-typec7i-flex.large \
+eksctl create cluster \
+  --name sk-cluster \
+  --region eu-west-1 \
+  --node-type c7i-flex.large \
+  --node-volume-size 25
 
-TO Delete
-------
-export CLUSTER_NAME=sk-cluster
+export CLUSTER_NAME=suraj-cluster
 export AWS_REGION=eu-west-1
 
+TO Delete
+---------
 eksctl delete cluster \
   --name sk-cluster \
   --region eu-west-1
@@ -32,7 +34,7 @@ FOR IAM OIDC provider >> Without This yu will noot able to setup IAM role for yp
 ---------------------
 1.Set your cluster details
   export CLUSTER_NAME=sk-cluster
-export AWS_REGION=eu-west-1
+  export AWS_REGION=eu-west-1
 
 2.Check your AWS identity and cluster:
 aws sts get-caller-identity
@@ -78,11 +80,55 @@ eksctl create iamserviceaccount \
   --approve
 
 FOR EBS CSI Driver
+----------------
 aws eks create-addon \
   --cluster-name "$CLUSTER_NAME" \
   --region "$AWS_REGION" \
   --addon-name aws-ebs-csi-driver \
-  --service-account-role-arn "$EBS_ROLE_ARN" \
+  --service-account-role-arn "$(aws iam get-role --role-name AmazonEKS_EBS_CSI_DriverRole --query 'Role.Arn' --output text)" \
   --resolve-conflicts OVERWRITE
 
+CHECK
+------
+aws eks list-addons \
+  --cluster-name "$CLUSTER_NAME" \
+  --region "$AWS_REGION"
 
+aws eks describe-addon \
+  --cluster-name "$CLUSTER_NAME" \
+  --region "$AWS_REGION" \
+  --addon-name aws-ebs-csi-driver \
+  --query 'addon.{Status:status,Health:health.issues}' 
+
+
+Install Helm
+-----------
+ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+ chmod 700 get_helm.sh
+./get_helm.sh
+
+EBS CSI Driver
+--------------
+First, create the EBS IAM role and service account as discussed earlier. Then install the chart:
+----------------------------------------------------------------------------------------
+helm repo add aws-ebs-csi-driver \
+  https://kubernetes-sigs.github.io/aws-ebs-csi-driver
+
+helm repo update
+
+helm upgrade --install aws-ebs-csi-driver \
+  aws-ebs-csi-driver/aws-ebs-csi-driver \
+  --namespace kube-system
+
+EFS CSI Driver
+--------------
+Create the EFS IAM role and service account first, then install:
+--------------------------------------------------------------
+helm repo add aws-efs-csi-driver \
+  https://kubernetes-sigs.github.io/aws-efs-csi-driver/
+
+helm repo update
+
+helm upgrade --install aws-efs-csi-driver \
+  aws-efs-csi-driver/aws-efs-csi-driver \
+  --namespace kube-system
