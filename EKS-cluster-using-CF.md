@@ -34,11 +34,11 @@ FOR IAM OIDC provider >> Without This yu will noot able to setup IAM role for yp
 ---------------------
 1.Set your cluster details \
 
-  export CLUSTER_NAME=sk-cluster
+  export CLUSTER_NAME=sk-cluster \
   export AWS_REGION=eu-west-1
 
 2.Check your AWS identity and cluster:
-aws sts get-caller-identity
+aws sts get-caller-identity 
 aws eks describe-cluster \
   --name "$CLUSTER_NAME" \
   --region "$AWS_REGION" \
