@@ -27,13 +27,13 @@ export AWS_REGION=eu-west-1
 TO Delete
 ---------
 eksctl delete cluster \
-
   --name sk-cluster \
   --region eu-west-1
 
 FOR IAM OIDC provider >> Without This yu will noot able to setup IAM role for ypu cluster CSI driver
 ---------------------
-1.Set your cluster details
+1.Set your cluster details \
+
   export CLUSTER_NAME=sk-cluster
   export AWS_REGION=eu-west-1
 
