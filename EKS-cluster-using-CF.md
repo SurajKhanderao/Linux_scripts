@@ -27,6 +27,7 @@ export AWS_REGION=eu-west-1
 TO Delete
 ---------
 eksctl delete cluster \
+
   --name sk-cluster \
   --region eu-west-1
 
