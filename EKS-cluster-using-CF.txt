@@ -30,7 +30,29 @@ eksctl delete cluster \
   --name sk-cluster \
   --region eu-west-1
 
-FOR IAM OIDC provider >> Without This yu will noot able to setup IAM role for ypu cluster CSI driver
+Craete SA & Attaching Role using Pod Identity Provider Agent
+-----------------------------------------------------------
+1. Install the EKS Pod Identity Agent
+eksctl create addon \
+  --cluster "$CLUSTER_NAME" \
+  --region "$AWS_REGION" \
+  --name eks-pod-identity-agent
+
+kubectl get pods -n kube-system | grep pod-identity
+
+----------------------------------------------
+2. Create the ServiceAccount, IAM role, and association together
+eksctl create podidentityassociation \
+  --cluster "$CLUSTER_NAME" \
+  --region "$AWS_REGION" \
+  --namespace kube-system \
+  --service-account-name efs-csi-controller-sa \
+  --role-name "AmazonEKS_EFS_CSI_DriverRole" \
+  --permission-policy-arns arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy \
+  --create-service-account
+
+
+FOR IAM OIDC provider 
 ---------------------
 1.Set your cluster details \
 
