@@ -21,7 +21,7 @@ eksctl create cluster \
   --node-type c7i-flex.large \
   --node-volume-size 25
 
-export CLUSTER_NAME=suraj-cluster
+export CLUSTER_NAME= sk-cluster
 export AWS_REGION=eu-west-1
 
 TO Delete
