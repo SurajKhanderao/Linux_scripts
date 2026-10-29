@@ -19,7 +19,7 @@ eksctl create cluster \
   --node-volume-size 25
 ```
 ```
-export CLUSTER_NAME= sk-cluster
+export CLUSTER_NAME=sk-cluster
 export AWS_REGION=eu-west-1
 
 TO Delete
