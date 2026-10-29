@@ -1,14 +1,17 @@
+```
 | create sever intance 
 | atatch ROLE
 | connect to sever
 | install kubectl and EKSctl
-
+```
+```
 Kubectl--> 
 ----------
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 chmod +x kubectl
 mv kubectl /usr/local/bin/kubectl
-
+```
+```
 eksctl -->
 -------
 curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
@@ -20,6 +23,7 @@ eksctl create cluster \
   --region eu-west-1 \
   --node-type c7i-flex.large \
   --node-volume-size 25
+```
 
 export CLUSTER_NAME= sk-cluster
 export AWS_REGION=eu-west-1
@@ -29,7 +33,9 @@ TO Delete
 eksctl delete cluster \
   --name sk-cluster \
   --region eu-west-1
+```
 
+```
 Craete SA & Attaching Role using Pod Identity Provider Agent
 -----------------------------------------------------------
 1. Install the EKS Pod Identity Agent
@@ -50,8 +56,9 @@ eksctl create podidentityassociation \
   --role-name "AmazonEKS_EFS_CSI_DriverRole" \
   --permission-policy-arns arn:aws:iam::aws:policy/service-role/AmazonEFSCSIDriverPolicy \
   --create-service-account
+```
 
-
+```
 FOR IAM OIDC provider 
 ---------------------
 1.Set your cluster details \
@@ -73,7 +80,7 @@ aws eks describe-cluster \
   --region "$AWS_REGION" \
   --approve
 
-4. Create the EFS/EBS CSI IAM role 
+4. Create the EFS CSI IAM role 
    export ROLE_NAME=AmazonEKS_EFS_CSI_DriverRole
   eksctl create iamserviceaccount \
   --cluster "$CLUSTER_NAME" \
