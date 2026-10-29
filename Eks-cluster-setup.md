@@ -165,11 +165,12 @@ helm upgrade --install aws-efs-csi-driver \
 Install NGINX Ingress Controller...."This controller uses the nginx IngressClass name"
 ---------------------------------
 
-helm repo add nginx-stable https://helm.nginx.com/stable
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+
 helm repo update
 
-helm upgrade --install nginx-ingress nginx-stable/nginx-ingress \
-  --namespace nginx-ingress \
+helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+  --namespace ingress-nginx \
   --create-namespace
 
 kubectl get pods -n nginx-ingress
