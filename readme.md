@@ -1,9 +1,12 @@
-```
+
 | create sever intance 
+
 | atatch ROLE
+
 | connect to sever
+
 | install kubectl and EKSctl
-```
+
 ```
 Kubectl--> 
 ----------
@@ -164,6 +167,40 @@ helm repo add aws-efs-csi-driver \
 helm repo update
 
 helm upgrade --install aws-efs-csi-driver \
-```
   aws-efs-csi-driver/aws-efs-csi-driver \
   --namespace kube-system
+```
+```
+Install NGINX Ingress Controller...."This controller uses the nginx IngressClass name"
+---------------------------------
+
+helm repo add nginx-stable https://helm.nginx.com/stable
+helm repo update
+
+helm upgrade --install nginx-ingress nginx-stable/nginx-ingress \
+  --namespace nginx-ingress \
+  --create-namespace
+
+kubectl get pods -n nginx-ingress
+kubectl get svc -n nginx-ingress
+kubectl get ingressclass
+```
+
+```
+Install cert-manager using its official Helm chart
+-----------------------------------------------
+
+helm install cert-manager \
+  oci://quay.io/jetstack/charts/cert-manager \
+  --version v1.20.4 \
+  --namespace cert-manager \
+  --create-namespace \
+  --set crds.enabled=true
+
+Verify:
+-----
+kubectl get pods -n cert-manager
+kubectl get crds | grep cert-manager
+
+```
+```
