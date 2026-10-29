@@ -24,7 +24,7 @@ eksctl create cluster \
   --node-type c7i-flex.large \
   --node-volume-size 25
 ```
-
+```
 export CLUSTER_NAME= sk-cluster
 export AWS_REGION=eu-west-1
 
@@ -79,7 +79,8 @@ aws eks describe-cluster \
   --cluster "$CLUSTER_NAME" \
   --region "$AWS_REGION" \
   --approve
-
+```
+```
 4. Create the EFS CSI IAM role 
    export ROLE_NAME=AmazonEKS_EFS_CSI_DriverRole
   eksctl create iamserviceaccount \
@@ -97,8 +98,8 @@ aws eks describe-cluster \
   --region "$AWS_REGION" \
   --name aws-efs-csi-driver \2
   --service-account-role-arn "$(aws iam get-role --role-name AmazonEKS_EFS_CSI_DriverRole --query 'Role.Arn' --output text)"
-
-
+```
+```
 Create the EBS CSI IAM role
 eksctl create iamserviceaccount \
   --cluster "$CLUSTER_NAME" \
@@ -117,7 +118,8 @@ aws eks create-addon \
   --addon-name aws-ebs-csi-driver \
   --service-account-role-arn "$(aws iam get-role --role-name AmazonEKS_EBS_CSI_DriverRole --query 'Role.Arn' --output text)" \
   --resolve-conflicts OVERWRITE
-
+```
+```
 CHECK
 ------
 aws eks list-addons \
@@ -129,14 +131,15 @@ aws eks describe-addon \
   --region "$AWS_REGION" \
   --addon-name aws-ebs-csi-driver \
   --query 'addon.{Status:status,Health:health.issues}' 
-
-
+```
+```
 Install Helm
 -----------
  curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
  chmod 700 get_helm.sh
 ./get_helm.sh
-
+```
+```
 EBS CSI Driver
 --------------
 First, create the EBS IAM role and service account as discussed earlier. Then install the chart:
@@ -149,7 +152,8 @@ helm repo update
 helm upgrade --install aws-ebs-csi-driver \
   aws-ebs-csi-driver/aws-ebs-csi-driver \
   --namespace kube-system
-
+```
+```
 EFS CSI Driver
 --------------
 Create the EFS IAM role and service account first, then install:
@@ -160,5 +164,6 @@ helm repo add aws-efs-csi-driver \
 helm repo update
 
 helm upgrade --install aws-efs-csi-driver \
+```
   aws-efs-csi-driver/aws-efs-csi-driver \
   --namespace kube-system
