@@ -1,12 +1,3 @@
-
-| create sever intance 
-
-| atatch ROLE
-
-| connect to sever
-
-| install kubectl and EKSctl
-
 ```
 Kubectl--> 
 ----------
