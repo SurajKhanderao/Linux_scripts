@@ -225,3 +225,29 @@ helm install external-secrets \
   external-secrets/external-secrets \
   -n external-secrets
 ```
+### Install Pod Identity Agent
+  ```
+aws eks create-addon \
+  --cluster-name sk-cluster \
+  --addon-name eks-pod-identity-agent \
+  --region eu-west-1
+    ```
+  ```
+### Note: The ServiceAccount is created by default in the ESO Helm deployment. No need to create it separately.
+  ```
+### Attach Role to That ServiceAccount
+  ```
+aws eks create-pod-identity-association \
+  --cluster-name sk-cluster \
+  --namespace external-secrets \
+  --service-account external-secrets \
+  --role-arn YOUR_ROLE_ARN \
+  --region eu-west-1
+  ```
+  ```
+### Verify
+  ```
+aws eks list-pod-identity-associations \
+  --cluster-name sk-cluster \
+  --region eu-west-1
+  ```
