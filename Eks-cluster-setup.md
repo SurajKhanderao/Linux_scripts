@@ -33,9 +33,12 @@ eksctl delete cluster \
 Craete SA & Attaching Role using Pod Identity Provider Agent
 -----------------------------------------------------------
 
+export CLUSTER_NAME=sk-cluster
+export AWS_REGION=eu-west-1
 
 
 1. Install the EKS Pod Identity Agent
+
 eksctl create addon \
   --cluster "$CLUSTER_NAME" \
   --region "$AWS_REGION" \
@@ -49,17 +52,19 @@ eksctl create podidentityassociation \
   --cluster "$CLUSTER_NAME" \
   --region "$AWS_REGION" \
   --namespace kube-system \
-  --service-account-name ebs-csi-controller-sa  \
+  --service-account-name ebs-csi-controller-sa \
   --role-name AmazonEKS_EBS_CSI_DriverRole \
-  --permission-policy-arns arn:aws:iam::aws:policy/service-role/AmazonEKS_EBS_CSI_DriverRole \
+  --permission-policy-arns arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy \
   --create-service-account
 
 FOR EBS CSI Driver
 ----------------
 aws eks create-addon \
-  --cluster-name sk-cluster \
-  --region eu-west-1 \
-  --addon-name aws-ebs-csi-driver
+  --cluster-name "$CLUSTER_NAME" \
+  --region "$AWS_REGION" \
+  --addon-name aws-ebs-csi-driver \
+  --resolve-conflicts OVERWRITE
+
 ```
 
 ```
