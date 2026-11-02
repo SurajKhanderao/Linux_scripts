@@ -210,4 +210,18 @@ kubectl get pods -n cert-manager
 kubectl get crds | grep cert-manager
 
 ```
+
+### Install External Secrets Operator in EKS
+```
+helm repo add external-secrets https://charts.external-secrets.io
+
+helm repo update
+```
+### Install ESO
+```
+kubectl create namespace external-secrets
+
+helm install external-secrets \
+  external-secrets/external-secrets \
+  -n external-secrets
 ```
